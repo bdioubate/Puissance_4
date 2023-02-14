@@ -2,15 +2,13 @@ import { discColorClass } from "../../func/color"
 import { prevent } from "../../func/dom"
 import { PlayerColor } from "../../types"
 
-type VictoryProps = {
-    color: PlayerColor,
-    name: string,
+type DrawProps = {
     onRestart?: () => void
 }
 
-export function Victory ({color, name, onRestart}: VictoryProps) {
+export function Draw ({onRestart}: DrawProps) {
     return <div className="flex" style={{justifyContent: 'space-between'}}>
-        <h2 className="flex" style={{gap: '0.5rem'}}>Bravo, {name}<div className={discColorClass(color)}></div>a gagné</h2>
+        <h2 className="flex" style={{gap: '0.5rem'}}>Dommage :( c'est une égalité</h2>
         <button className="button" onClick={prevent(onRestart)}>Rejouer</button>
     </div> 
 }

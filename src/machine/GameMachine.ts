@@ -1,4 +1,4 @@
-import { createMachine, interpret, InterpreterFrom } from "xstate";
+import { interpret, InterpreterFrom } from "xstate";
 import { createModel } from "xstate/lib/model";
 import { GameContext, GameStates, GridState, Player, PlayerColor, Position } from "../types";
 import { chooseColorAction, dropTokenAction, joinGameAction, leaveGameAction, restartAction, saveWiningPositionsActions, setCurrentPlayerAction, switchPlayerAction } from "./actions";
@@ -10,13 +10,13 @@ export const GameModel = createModel({
     rowLength: 4,
     winingPositions: [] as Position[],
     grid: [
-        ["E","E","E","E","E","E","E"],
-        ["E","E","E","E","E","E","E"],
-        ["E","E","E","E","E","E","E"],
-        ["E","E","E","E","E","E","E"],
-        ["E","E","E","E","E","E","E"],
-        ["E","E","E","E","E","E","E"]
-    ] as GridState
+        ["E", "E", "E", "E", "E", "E", "E"],
+        ["E", "E", "E", "E", "E", "E", "E"],
+        ["E", "E", "E", "E", "E", "E", "E"],
+        ["E", "E", "E", "E", "E", "E", "E"],
+        ["E", "E", "E", "E", "E", "E", "E"],
+        ["E", "E", "E", "E", "E", "E", "E"]
+      ] as GridState
 }, {
     events: {
         join: (playerId: Player["id"], name: Player["name"]) => ({playerId, name}),
@@ -24,14 +24,26 @@ export const GameModel = createModel({
         chooseColor: (playerId: Player["id"], color: PlayerColor) => ({playerId, color}),
         start: (playerId: Player["id"]) => ({playerId}),
         dropToken: (playerId: Player["id"], x: number) => ({playerId, x}),
-        restart: (playerId: Player["id"]) => ({playerId})
+        restart: (playerId: Player["id"]) => ({playerId}),
     }
 })
 
 export const GameMachine = GameModel.createMachine({
     id: 'game',
-    context: GameModel.initialContext,
-    initial: GameStates.LOBBY,
+    context: {
+        ...GameModel.initialContext,
+        players: [{
+            id: 'John',
+            name: 'John',
+            color: PlayerColor.YELLOW
+        }, {
+            id: 'Marc',
+            name: 'Marc',
+            color: PlayerColor.RED
+        }],
+        currentPlayer: 'John'
+    },
+    initial: GameStates.PLAY,
     states: {
         [GameStates.LOBBY]: {
             on: {
@@ -48,7 +60,7 @@ export const GameMachine = GameModel.createMachine({
                 chooseColor: {
                     cond: canChooseColorGuard,
                     target: GameStates.LOBBY,
-                    actions: [GameModel.assign(chooseColorAction)]
+                    actions: [GameModel.assign(chooseColorAction)],
                 },
                 start: {
                     cond: canStartGameGuard,
@@ -61,7 +73,7 @@ export const GameMachine = GameModel.createMachine({
             after: {
                 20000: {
                     target: GameStates.PLAY,
-                    actions: [GameModel.assign(switchPlayerAction)]
+                    actions: [GameModel.assign(switchPlayerAction)],
                 }
             },
             on:{
@@ -69,7 +81,7 @@ export const GameMachine = GameModel.createMachine({
                     {
                         cond: isDrawMoveGuard,
                         target: GameStates.DRAW,
-                        actions: [GameModel.assign(dropTokenAction)]
+                        actions: [GameModel.assign(dropTokenAction)],
                     },
                     {
                         cond: isWiningMoveGuard,
@@ -78,7 +90,7 @@ export const GameMachine = GameModel.createMachine({
                     },
                     {
                         cond: canDropGuard,
-                        target: GameStates.VICTORY,
+                        target: GameStates.PLAY,
                         actions: [GameModel.assign(dropTokenAction), GameModel.assign(switchPlayerAction)]
                     }
                 ]
@@ -105,13 +117,14 @@ export const GameMachine = GameModel.createMachine({
 
 //Fonction qui permet de simuler un etat et context 
 //et de nous renvoyer une machine intepreter
-export function makeGame(state: GameStates = GameStates.LOBBY, context: Partial<GameContext> = {}): InterpreterFrom<typeof GameMachine> {
-    const machine =  interpret(
+export function makeGame (state: GameStates = GameStates.LOBBY, context: Partial<GameContext> = {}): InterpreterFrom<typeof GameMachine> {
+    const machine = interpret(
         GameMachine.withContext({
             ...GameModel.initialContext,
             ...context
         })
     ).start()
+    GameMachine
     machine.state.value = state
     return machine
 }

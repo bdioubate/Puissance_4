@@ -1,6 +1,6 @@
 import { CellState, PlayerColor } from "../types";
 
-export function disColorClass (color: CellState) {
+export function discColorClass (color: CellState) {
     if(color === 'E') {
         return 'disc'
     }

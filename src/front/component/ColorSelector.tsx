@@ -1,5 +1,5 @@
 import { Player, PlayerColor } from "../../types";
-import { disColorClass } from "../../func/color";
+import { discColorClass } from "../../func/color";
 
 type ColorSelectorProps = {
     onSelect: (color: PlayerColor) => void,
@@ -13,13 +13,15 @@ export function ColorSelector ({ onSelect, players, colors}: ColorSelectorProps)
         <div className="players">
             {players.map(player =>  <div key={player.id} className="player">
                 {player.name}
-                {player.color && <div className={disColorClass(player.color)}></div>}
+                {player.color && <div className={discColorClass(player.color)}></div>}
             </div>)}
         </div>
         <h3>Selectionner une couleur</h3>
         <div className="selector">
-            {colors.map(color => <button className={disColorClass(color)} key={color}
-            onClick={() => onSelect(color)}></button>
+            {colors.map(color => <button key={color}
+            onClick={() => onSelect(color)}>
+                <div className={discColorClass(color)}></div>
+            </button>
             )}
         </div>
     </>

@@ -1,4 +1,4 @@
-import { disColorClass } from "../../func/color"
+import { discColorClass } from "../../func/color"
 import { PlayerColor } from "../../types"
 
 type GameInfoProps = {
@@ -8,6 +8,6 @@ type GameInfoProps = {
 
 export function GameInfo ({color, name}: GameInfoProps) {
     return <div>
-        <h2 className="flex" style={{gap: '0.5rem'}}>Au tour de {name}<div className={disColorClass(color)}></div>de jouer</h2>
+        <h2 className="flex" style={{gap: '0.5rem'}}>Au tour de {name}<div className={discColorClass(color)}></div>de jouer</h2>
     </div> 
 }
