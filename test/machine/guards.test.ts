@@ -86,7 +86,7 @@ describe("machine/guards", () => {
 
         //Error
         it('should make me win', () => {
-            expect(machine.send(GameModel.events.dropToken("1", 5)).changed).toBe(true)
+            expect(machine.send(GameModel.events.dropToken("1", )).changed).toBe(true)
             expect(machine.state.value).toBe(GameStates.VICTORY)
             expect(machine.state.context.winingPositions).toHaveLength(4)
         })
